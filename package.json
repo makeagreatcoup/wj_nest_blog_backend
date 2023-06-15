@@ -1,5 +1,5 @@
 {
-  "name": "nest-test",
+  "name": "wj_nest_blog_backend",
   "version": "0.0.1",
   "description": "",
   "author": "wangj",
@@ -8,7 +8,7 @@
   "scripts": {
     "cli": "cross-env NODE_ENV=dev ./src/cli.js",
     "dev": "cross-env NODE_ENV=dev nest start",
-    "prod": "nest start --port $PORT --env-file .env.prod",
+    "prod": "cross-env NODE_ENV=prod nest start",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",

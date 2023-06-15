@@ -4,6 +4,7 @@ import { PassportModule } from "@nestjs/passport";
 import { Configure } from "../core/configure";
 import { EnvironmentType } from "../core/constants";
 import { ModuleBuilder } from "../core/decorators";
+import { DatabaseModule } from "../database/database.module";
 import { addEntities, addSubscribers } from "../database/helpers";
 
 import * as entities from './entities';
@@ -13,7 +14,6 @@ import * as services from './services';
 import * as strategies from './strategies';
 import * as subscribers from './subscribers';
 import { UserConfig } from "./types";
-import { DatabaseModule } from "../database/database.module";
 
 
 const jwtModuleRegister = (configure: Configure) => async (): Promise<JwtModuleOptions> => {
