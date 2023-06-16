@@ -6,5 +6,8 @@
     "deleteOutDir": true,
     "assets": ["assets"],
     "watchAssets": true
+  },
+  "buildOptions": {
+    "outputPath": "./dist"
   }
 }
