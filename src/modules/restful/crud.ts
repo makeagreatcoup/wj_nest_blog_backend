@@ -6,8 +6,8 @@ import { isNil } from "lodash";
 
 import { BaseController } from "./base";
 import { BaseControllerWithTrash } from "./base/trashed.controller";
-import { CrudItem, CrudOptions } from "./type";
 import { ALLOW_GUEST } from "./constants";
+import { CrudItem, CrudOptions } from "./type";
 
 /**
  * crud选项生成函数
