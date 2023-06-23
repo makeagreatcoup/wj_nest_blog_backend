@@ -52,4 +52,6 @@ export class CreateCommentDto{
   @ValidateIf((value)=>value.parent!==null&&value.parent)
   @IsOptional()
   parent?:string;
+
+  
 }

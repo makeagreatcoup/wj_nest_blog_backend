@@ -141,7 +141,7 @@ export abstract class BaseService<E extends ObjectLiteral,R extends BaseReposito
    */
   async delete(ids:string[],trash?:boolean){
     let items:E[]=[];
-    if(this.repository instanceof BaseTreeRepository<E>){
+    if(this.repository instanceof BaseTreeRepository){
       items=await this.repository.find({
         where:{id:In(ids) as any},
         withDeleted:this.enableTrash?true:undefined,

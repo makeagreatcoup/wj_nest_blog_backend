@@ -1,14 +1,12 @@
 import { Exclude, Expose, Type } from 'class-transformer';
 import {
   Column,
-  CreateDateColumn,
   DeleteDateColumn,
   Entity,
   Index,
   JoinTable,
   ManyToMany,
   OneToMany,
-  UpdateDateColumn,
 } from 'typeorm';
 
 import { BaseEntity } from '@/modules/database/base/entity';
@@ -61,16 +59,6 @@ export class PostEntity extends BaseEntity {
   @Expose()
   @Column({ comment: '文章排序', default: 0 })
   customOrder!: number;
-
-  @Expose()
-  @Type(() => Date)
-  @CreateDateColumn({ comment: '创建时间' })
-  createdAt!: Date;
-
-  @Expose()
-  @Type(() => Date)
-  @UpdateDateColumn({ comment: '更新时间' })
-  updatedAt!: Date;
 
   @ManyToMany(()=>CategoryEntity,(category)=>category.posts,{
     // 新增文章时，如果所属分类不存在则直接创建

@@ -16,7 +16,7 @@ export class CategoryEntity extends BaseEntity{
   name!:string;
 
   @Expose({groups:['category-tree','category-list', 'category-detail']})
-  @Column({comment:'分类描述',default:0})
+  @Column({comment:'分类排序',default:0})
   customOrder!:number;
 
   @ManyToMany(()=>PostEntity,(post)=>post.categories)
