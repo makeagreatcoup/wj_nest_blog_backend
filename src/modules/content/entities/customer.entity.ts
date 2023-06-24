@@ -17,8 +17,8 @@ import { CommentEntity } from './comment.entity';
 export class CustomerEntity extends BaseEntity {
 
   @Expose()
-  @Column({ comment: '用户名', unique: true })
-  username!: string;
+  @Column({ comment: '姓名',unique: true})
+  nickname!: string;
 
   @Expose()
   @Column({ comment: '后台用户', nullable: true })
@@ -26,7 +26,7 @@ export class CustomerEntity extends BaseEntity {
   user?: UserEntity|null;
 
   @Expose()
-  @Column({ comment: '后台用户', nullable: true })
+  @Column({ comment: '评论数据', nullable: true })
   @OneToMany(()=>CommentEntity,(comment)=>comment.customer,{
     cascade:true
   })

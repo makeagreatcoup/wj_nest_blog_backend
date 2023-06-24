@@ -156,6 +156,7 @@ export class CreatePostDto {
 /**
  * 文章更新验证
  */
+@DtoValidation({groups:['update']})
 export class UpdatePostDto extends PartialType(CreatePostDto) {
   @ApiProperty({
     description: '待更新的文章ID',

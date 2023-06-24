@@ -6,9 +6,7 @@ import { BaseService } from "@/modules/database/base/service";
 
 import { CreateCommentDto, QueryCommentDto, QueryCommentTreeDto } from "../dtos/comment.dto";
 import { CommentEntity } from "../entities/comment.entity";
-import { PostRepository } from "../repositories";
-import { CommentRepository } from "../repositories/comment.repository";
-
+import { PostRepository,CommentRepository } from "../repositories";
 
 @Injectable()
 export class CommentService extends BaseService<CommentEntity,CommentRepository>{

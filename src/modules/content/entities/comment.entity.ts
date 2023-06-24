@@ -3,7 +3,6 @@ import {  Column, Entity, ManyToOne, Tree, TreeChildren, TreeParent } from "type
 
 import { BaseEntity } from "@/modules/database/base/entity";
 
-
 import { CustomerEntity } from "./customer.entity";
 import { PostEntity } from "./post.entity";
 

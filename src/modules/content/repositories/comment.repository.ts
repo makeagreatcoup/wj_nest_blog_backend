@@ -5,7 +5,7 @@ import { BaseTreeRepository } from "@/modules/database/base/tree.repository";
 import { CustomRepository } from "@/modules/database/decorators/repository.decorator";
 import { QueryParams } from "@/modules/database/types";
 
-import { CommentEntity } from "../entities/comment.entity";
+import { CommentEntity } from "../entities";
 
 @CustomRepository(CommentEntity)
 export class CommentRepository extends BaseTreeRepository<CommentEntity>{
