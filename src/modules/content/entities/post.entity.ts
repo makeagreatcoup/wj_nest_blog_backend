@@ -4,6 +4,8 @@ import {
   DeleteDateColumn,
   Entity,
   Index,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   OneToMany,
 } from 'typeorm';
@@ -14,6 +16,7 @@ import { PostBodyType } from '../../core/constants';
 
 import { CategoryEntity } from './category.entity';
 import { CommentEntity } from './comment.entity';
+import { TagEntity } from './tag.entity';
 
 @Exclude()
 @Entity('content_posts')
@@ -64,6 +67,10 @@ export class PostEntity extends BaseEntity {
     cascade:true
   })
   category!:CategoryEntity;
+
+  @ManyToMany(()=>TagEntity,tags=>tags.posts)
+  @JoinTable()
+  tags?:TagEntity[];
 
   @OneToMany(()=>CommentEntity,(comment)=>comment.post,{
     cascade:true

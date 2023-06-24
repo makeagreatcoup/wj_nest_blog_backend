@@ -222,18 +222,18 @@ export class PostService extends BaseService<PostEntity,PostRepository,FindParam
           .orWhere('summary LIKE :search', { search: `%${search}%` })
           .orWhere('categories.name LIKE :search', { search: `%${search}%` });
       } else {
-        qb.andWhere('MATCH(title) AGAINST (:search IN BOOLEAN MODE)', {
+        qb.andWhere('MATCH(title,body,summary,categories.name) AGAINST (:search IN BOOLEAN MODE)', {
           search: `${search}*`,
         })
-          .orWhere('MATCH(body) AGAINST (:search IN BOOLEAN MODE)', {
-            search: `${search}*`,
-          })
-          .orWhere('MATCH(summary) AGAINST (:search IN BOOLEAN MODE)', {
-            search: `${search}*`,
-          })
-          .orWhere('MATCH(categories.name) AGAINST (:search IN BOOLEAN MODE)', {
-            search: `${search}*`,
-          });
+          // .orWhere('MATCH(body) AGAINST (:search IN BOOLEAN MODE)', {
+          //   search: `${search}*`,
+          // })
+          // .orWhere('MATCH(summary) AGAINST (:search IN BOOLEAN MODE)', {
+          //   search: `${search}*`,
+          // })
+          // .orWhere('MATCH(categories.name) AGAINST (:search IN BOOLEAN MODE)', {
+          //   search: `${search}*`,
+          // });
       }
     }
     newQb = this.queryOrderBy(newQb, orderBy);

@@ -14,7 +14,13 @@ export enum PostBodyType {
   HTML = 'html',
   MD = 'markdown',
 }
-
+/**
+ * 文章内容类型
+ */
+export enum EffectType {
+  ON = 'ON',
+  OFF = 'OFF',
+}
 /**
  * 文章排序类型
  */
