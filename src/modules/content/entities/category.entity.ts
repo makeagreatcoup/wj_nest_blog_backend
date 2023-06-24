@@ -1,5 +1,5 @@
 import { Exclude, Expose, Type } from "class-transformer";
-import {  Column, DeleteDateColumn, Entity, Index, ManyToMany, Tree, TreeChildren, TreeParent } from "typeorm";
+import {  Column, DeleteDateColumn, Entity, Index, OneToMany, Tree, TreeChildren, TreeParent } from "typeorm";
 
 import { BaseEntity } from "@/modules/database/base/entity";
 
@@ -19,7 +19,7 @@ export class CategoryEntity extends BaseEntity{
   @Column({comment:'分类排序',default:0})
   customOrder!:number;
 
-  @ManyToMany(()=>PostEntity,(post)=>post.categories)
+  @OneToMany(()=>PostEntity,(post)=>post.category)
   posts!:PostEntity[];
 
   @Expose({groups:['category-list']})

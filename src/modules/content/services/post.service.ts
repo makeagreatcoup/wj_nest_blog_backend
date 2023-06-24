@@ -1,5 +1,5 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { isArray, isFunction, isNil, omit } from 'lodash';
+import { isFunction, isNil, omit } from 'lodash';
 import {
   EntityNotFoundError,
   In,
@@ -94,12 +94,16 @@ export class PostService extends BaseService<PostEntity,PostRepository,FindParam
    * @returns 返回当前对象
    */
   async create(data: CreatePostDto) {
+    // const createDto = {
+    //   ...data,
+    //   categories: isArray(data.categories)
+    //     ? await this.categoryRepository.findBy({ id: In(data.categories) })
+    //     : [],
+    // };
     const createDto = {
       ...data,
-      categories: isArray(data.categories)
-        ? await this.categoryRepository.findBy({ id: In(data.categories) })
-        : [],
-    };
+      category:await this.categoryRepository.findOneBy({id:data.category})
+    }
     const item = await this.repository.save(createDto);
     if (!isNil(this.searchService)) {
       try {
@@ -118,14 +122,15 @@ export class PostService extends BaseService<PostEntity,PostRepository,FindParam
    */
   async update(data: UpdatePostDto) {
     const post = await this.findById(data.id);
-    if (isArray(data.categories)) {
-      await this.categoryRepository
-        .createQueryBuilder('post')
-        .relation(PostEntity, 'categories')
-        .of(post)
-        .addAndRemove(data.categories, post.categories ?? []);
-    }
-    await this.repository.update(data.id, omit(data, ['id', 'categories']));
+    // if (isArray(data.category)) {
+    //   await this.categoryRepository
+    //     .createQueryBuilder('post')
+    //     .relation(PostEntity, 'categories')
+    //     .of(post)
+    //     .addAndRemove(data.categories, post.categories ?? []);
+    // }
+    const category=await this.categoryRepository.findOneBy({id:data.category})
+    await this.repository.update(data.id, omit({...data,category}, ['id']));
 
     if (!isNil(this.searchService)) {
       try {

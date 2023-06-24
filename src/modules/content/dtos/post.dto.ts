@@ -138,7 +138,7 @@ export class CreatePostDto {
     message: '分类ID格式不正确',
   })
   @IsOptional({ always: true })
-  categories?: string[];
+  category?: string;
 
   @ApiPropertyOptional({
     description: '自定义排序',

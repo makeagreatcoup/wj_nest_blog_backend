@@ -4,8 +4,7 @@ import {
   DeleteDateColumn,
   Entity,
   Index,
-  JoinTable,
-  ManyToMany,
+  ManyToOne,
   OneToMany,
 } from 'typeorm';
 
@@ -60,12 +59,11 @@ export class PostEntity extends BaseEntity {
   @Column({ comment: '文章排序', default: 0 })
   customOrder!: number;
 
-  @ManyToMany(()=>CategoryEntity,(category)=>category.posts,{
+  @ManyToOne(()=>CategoryEntity,(category)=>category.posts,{
     // 新增文章时，如果所属分类不存在则直接创建
     cascade:true
   })
-  @JoinTable()
-  categories!:CategoryEntity[];
+  category!:CategoryEntity;
 
   @OneToMany(()=>CommentEntity,(comment)=>comment.post,{
     cascade:true
