@@ -40,13 +40,13 @@ export class CreateTagDto {
   @ApiPropertyOptional({
     description: '标签状态类型: 默认为ON',
     enum: EffectType,
-    default: 'markdown',
+    default: 'ON',
   })
   @IsEnum(EffectType, {
       message: `标签状态类型必须是${Object.values(EffectType).join(',')}其中一项`,
   })
   @IsOptional()
-  type:EffectType;
+  state:EffectType;
   
 }
 

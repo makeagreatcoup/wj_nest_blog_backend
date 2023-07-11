@@ -16,5 +16,5 @@ export interface ContentConfig{
  * 搜索体结构的内容类型
  */
 export type PostSearchBody = Pick<ClassToPlain<PostEntity>,'title'|'body'|'summary'>&{
-  categories:string
+  category:string
 }

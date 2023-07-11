@@ -12,7 +12,7 @@ import {
 
 import { BaseEntity } from '@/modules/database/base/entity';
 
-import { PostBodyType } from '../../core/constants';
+import { EffectType, PostBodyType } from '../../core/constants';
 
 import { CategoryEntity } from './category.entity';
 import { CommentEntity } from './comment.entity';
@@ -36,6 +36,19 @@ export class PostEntity extends BaseEntity {
   @Column({ comment: '文章描述', nullable: true })
   @Index({fulltext:true})
   summary?: string;
+
+  @Expose()
+  @Column({ comment: '文章封面', nullable: true })
+  cover?:string;
+
+  @Expose()
+  @Column({ 
+    comment: '文章状态',
+    type:'enum',
+    enum:EffectType,
+    default:EffectType.ON
+  })
+  state:EffectType;
 
   @Expose()
   @Column({ comment: '关键字', type: 'simple-array', nullable: true })
@@ -66,6 +79,7 @@ export class PostEntity extends BaseEntity {
     // 新增文章时，如果所属分类不存在则直接创建
     cascade:true
   })
+  @Index({fulltext:true})
   category!:CategoryEntity;
 
   @ManyToMany(()=>TagEntity,tags=>tags.posts)

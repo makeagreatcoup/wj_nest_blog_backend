@@ -37,6 +37,6 @@ export class TagEntity extends BaseEntity {
     enum:EffectType,
     default:EffectType.ON
   })
-  type:EffectType;
+  state:EffectType;
 
 }

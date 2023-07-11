@@ -37,7 +37,7 @@ export class SearchService{
       index:this.index,
       document:{
         ...pick(instanceToPlain(post),['id','title','body','summary']),
-        categories:(post.categories??[]).join(',')
+        category:(post.category.name)
       }
     })
   }
@@ -50,7 +50,7 @@ export class SearchService{
   async update(post:PostEntity){
     const newBody:PostSearchBody={
       ...pick(instanceToPlain(post),['title','body','author','summary']),
-      categories:(post.categories??[]).join(',')
+      category:(post.category.name)
     }
     const script=Object.entries(newBody).reduce((result,[key,value])=>`${result} ctx._source.${key}='${value}';`,'')
     return this.esService.updateByQuery({

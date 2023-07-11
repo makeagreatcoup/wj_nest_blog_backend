@@ -15,7 +15,7 @@ import {
 } from 'class-validator';
 import { isNil, toNumber } from 'lodash';
 
-import { PostBodyType, PostOrderType } from '@/modules/core/constants';
+import { EffectType, PostBodyType, PostOrderType } from '@/modules/core/constants';
 import { DtoValidation } from '@/modules/core/decorators';
 import { toBoolean } from '@/modules/core/helpers';
 import { IsDataExist } from '@/modules/database/constraints';
@@ -111,6 +111,24 @@ export class CreatePostDto {
   publishedAt?: Date;
 
   @ApiPropertyOptional({
+    description: '文章封面',
+    type:[String]
+  })
+  @IsOptional({ always: true })
+  cover?: string;
+
+  @ApiPropertyOptional({
+    description: '文章状态类型: 默认为ON',
+    enum: EffectType,
+    default: 'ON',
+  })
+  @IsEnum(EffectType, {
+      message: `文章状态类型必须是${Object.values(EffectType).join(',')}其中一项`,
+  })
+  @IsOptional()
+  state:EffectType;
+
+  @ApiPropertyOptional({
     description: '关键字:用于SEO',
     type: [String],
     maxLength: 20,
@@ -124,7 +142,7 @@ export class CreatePostDto {
   keywords?: string[];
 
   @ApiPropertyOptional({
-    description: '关联分类ID列表:一篇文章可以关联多个分类',
+    description: '关联分类ID',
     type: [String],
   })
   @IsDataExist(CategoryEntity, {
