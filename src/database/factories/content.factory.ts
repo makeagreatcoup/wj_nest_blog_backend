@@ -9,7 +9,7 @@ export type IPostFactoryOptions = Partial<{
     summary: string;
     body: string;
     isPublished: boolean;
-    categories: CategoryEntity[];
+    category: CategoryEntity;
     comments: CommentEntity[];
 }>;
 export const ContentFactory = defineFactory(
@@ -17,7 +17,7 @@ export const ContentFactory = defineFactory(
     async (faker: Faker, options: IPostFactoryOptions) => {
         // faker.setLocale('zh_CN');
         const post = new PostEntity();
-        const { title, summary, body, categories } = options;
+        const { title, summary, body, category } = options;
         post.title = title ?? faker.lorem.sentence(Math.floor(Math.random() * 10) + 6);
         if (summary) {
             post.summary = options.summary;
@@ -27,8 +27,8 @@ export const ContentFactory = defineFactory(
         if (Math.random() >= 0.5) {
             post.deleteAt = (await getTime()).toDate();
         }
-        if (categories) {
-            post.categories = categories;
+        if (category) {
+            post.category = category;
         }
         return post;
     },

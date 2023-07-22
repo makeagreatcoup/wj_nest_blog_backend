@@ -19,11 +19,17 @@ export class LocalAuthGuard extends AuthGuard('local') {
                 validationError: { target: false },
             });
         } catch (errors) {
+            console.log(errors)
             const messages = (errors as any[])
                 .map((e) => e.constraints ?? {})
                 .reduce((o, n) => ({ ...o, ...n }), {});
             throw new BadRequestException(Object.values(messages));
         }
+    // } catch (error) {
+    //     // const messages = error.constraints;
+    //     throw new BadRequestException(Object.values(error)); 
+    //   // 其他错误处理
+    // }
         return super.canActivate(context) as boolean;
     }
 }

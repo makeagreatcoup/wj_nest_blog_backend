@@ -25,6 +25,7 @@
   "dependencies": {
     "@elastic/elasticsearch": "^8.8.0",
     "@faker-js/faker": "^8.0.2",
+    "@fastify/cors": "^8.3.0",
     "@fastify/static": "^6.10.2",
     "@nestjs/common": "^9.4.2",
     "@nestjs/core": "^9.4.2",

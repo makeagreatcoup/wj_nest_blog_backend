@@ -58,9 +58,9 @@ export class UserService extends BaseService<UserEntity,UserRepository>{
       query=await callback(query);
     }
     return query
-    .where('user.username = :creadential',{credential})
-    .orWhere('user.email = :creadential',{credential})
-    .orWhere('user.phone = :creadential',{credential})
+    .where('user.username = :credential',{credential})
+    .orWhere('user.email = :credential',{credential})
+    .orWhere('user.phone = :credential',{credential})
     .getOne()
   }
 

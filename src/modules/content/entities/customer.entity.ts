@@ -20,13 +20,13 @@ export class CustomerEntity extends BaseEntity {
   @Column({ comment: '姓名',unique: true})
   nickname!: string;
 
+  // @Column({ comment: '后台用户', nullable: true })
   @Expose()
-  @Column({ comment: '后台用户', nullable: true })
   @OneToOne(()=>UserEntity,(user)=>user.customer)
-  user?: UserEntity|null;
+  user?: UserEntity;
 
+  // @Column({ comment: '评论数据', nullable: true })
   @Expose()
-  @Column({ comment: '评论数据', nullable: true })
   @OneToMany(()=>CommentEntity,(comment)=>comment.customer,{
     cascade:true
   })

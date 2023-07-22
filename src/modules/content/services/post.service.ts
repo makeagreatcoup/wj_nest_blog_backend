@@ -96,8 +96,8 @@ export class PostService extends BaseService<PostEntity,PostRepository,FindParam
   async create(data: CreatePostDto) {
     // const createDto = {
     //   ...data,
-    //   categories: isArray(data.categories)
-    //     ? await this.categoryRepository.findBy({ id: In(data.categories) })
+    //   category: data.category
+    //     ? await this.categoryRepository.findBy({ id: In(data.category) })
     //     : [],
     // };
     const createDto = {
@@ -125,9 +125,9 @@ export class PostService extends BaseService<PostEntity,PostRepository,FindParam
     // if (isArray(data.category)) {
     //   await this.categoryRepository
     //     .createQueryBuilder('post')
-    //     .relation(PostEntity, 'categories')
+    //     .relation(PostEntity, 'category')
     //     .of(post)
-    //     .addAndRemove(data.categories, post.categories ?? []);
+    //     .addAndRemove(data.category, post.category ?? '');
     // }
     const category=await this.categoryRepository.findOneBy({id:data.category})
     await this.repository.update(data.id, omit({...data,category}, ['id']));
@@ -220,9 +220,9 @@ export class PostService extends BaseService<PostEntity,PostRepository,FindParam
         qb.andWhere('title LIKE :search', { search: `%${search}%` })
           .orWhere('body LIKE :search', { search: `%${search}%` })
           .orWhere('summary LIKE :search', { search: `%${search}%` })
-          .orWhere('categories.name LIKE :search', { search: `%${search}%` });
+          .orWhere('category.name LIKE :search', { search: `%${search}%` });
       } else {
-        qb.andWhere('MATCH(title,body,summary,categories.name) AGAINST (:search IN BOOLEAN MODE)', {
+        qb.andWhere('MATCH(title,body,summary,category.name) AGAINST (:search IN BOOLEAN MODE)', {
           search: `${search}*`,
         })
           // .orWhere('MATCH(body) AGAINST (:search IN BOOLEAN MODE)', {
@@ -231,7 +231,7 @@ export class PostService extends BaseService<PostEntity,PostRepository,FindParam
           // .orWhere('MATCH(summary) AGAINST (:search IN BOOLEAN MODE)', {
           //   search: `${search}*`,
           // })
-          // .orWhere('MATCH(categories.name) AGAINST (:search IN BOOLEAN MODE)', {
+          // .orWhere('MATCH(category.name) AGAINST (:search IN BOOLEAN MODE)', {
           //   search: `${search}*`,
           // });
       }

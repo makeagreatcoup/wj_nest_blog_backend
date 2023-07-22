@@ -15,7 +15,7 @@ import { BaseSeeder } from '@/modules/database/base';
 import { DbFactory } from '@/modules/database/types';
 
 import { getCustomRepository } from '../../modules/database/helpers';
-import { categories, CategoryData, PostData, posts } from '../factories/content.data';
+import { category, CategoryData, PostData, posts } from '../factories/content.data';
 import { IPostFactoryOptions } from '../factories/content.factory';
 
 export default class ContentSeeder extends BaseSeeder {
@@ -25,7 +25,7 @@ export default class ContentSeeder extends BaseSeeder {
 
     async run(_factorier: DbFactory, _dataSource: DataSource, _em: EntityManager): Promise<any> {
         this.factorier = _factorier;
-        await this.loadCategories(categories);
+        await this.loadcategory(category);
         await this.loadPosts(posts);
     }
 
@@ -51,17 +51,17 @@ export default class ContentSeeder extends BaseSeeder {
         return comments;
     }
 
-    private async loadCategories(data: CategoryData[], parent?: CategoryEntity): Promise<void> {
+    private async loadcategory(data: CategoryData[], parent?: CategoryEntity): Promise<void> {
         let order = 0;
         for (const item of data) {
-            const category = new CategoryEntity();
-            category.name = item.name;
-            category.customOrder = order;
-            if (parent) category.parent = parent;
+            const category1 = new CategoryEntity();
+            category1.name = item.name;
+            category1.customOrder = order;
+            if (parent) category1.parent = parent;
             await this.em.save(category);
             order++;
             if (item.children) {
-                await this.loadCategories(item.children, category);
+                await this.loadcategory(item.children, category1);
             }
         }
     }
@@ -84,21 +84,23 @@ export default class ContentSeeder extends BaseSeeder {
             if (item.summary) {
                 options.summary = item.summary;
             }
-            if (item.categories) {
-                options.categories = await getCustomRepository(
+            if (item.category) {
+                options.category = await getCustomRepository(
                     this.dataSource,
                     CategoryRepository,
-                ).find({
-                    where: { name: In(item.categories) },
+                ).findOne({
+                    where: { name : item.category},
                 });
             }
             const post = await this.factorier(PostEntity)(options).create();
 
             await this.genRandomComments(post, Math.floor(Math.random() * 5));
         }
-        const redoms = await this.factorier(PostEntity)<IPostFactoryOptions>({
-            categories: getRandListData(allCates),
-        }).createMany(100);
+        const redoms = await this.factorier(PostEntity)<IPostFactoryOptions>(
+        //     {
+        //     category: allCates,
+        // }
+        ).createMany(100);
         for (const redom of redoms) {
             await this.genRandomComments(redom, Math.floor(Math.random() * 2));
         }

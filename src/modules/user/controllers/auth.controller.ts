@@ -34,8 +34,9 @@ export class AuthController {
     @Guest()
     @UseGuards(LocalAuthGuard)
     async login(@ReqUser() user: ClassToPlain<UserEntity>, @Body() _data: CredentialDto) {
-        return { token: await this.authService.createToken(user.id) };
+        return { data:{token: await this.authService.createToken(user.id)} };
     }
+
 
     /**
      * 注销登录

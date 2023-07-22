@@ -3,11 +3,11 @@ import { IsDefined, IsNotEmpty, IsOptional, IsUUID, MaxLength } from "class-vali
 
 import { DtoValidation } from "@/modules/core/decorators";
 import { IsDataExist } from "@/modules/database/constraints";
-import { ListWithTrashedQueryDto } from "@/modules/restful/dtos";
+import { ListQueryDto } from "@/modules/restful/dtos";
 import { UserEntity } from "@/modules/user/entities";
 
 @DtoValidation({type:'query'})
-export class QueryCustomerDto extends ListWithTrashedQueryDto {
+export class QueryCustomerDto extends ListQueryDto {
   @ApiProperty({
     description: '评论人姓名',
     maximum: 50,

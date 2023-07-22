@@ -29,13 +29,13 @@ export class UserEntity extends BaseEntity {
   })
   avatar?: string;
 
+  // @Column({
+  //   comment: '评论对象',
+  //   nullable: true,
+  // })
   @Expose()
-  @Column({
-    comment: '评论人',
-    nullable: true,
-  })
   @OneToOne(()=>CustomerEntity,(customer)=>customer.user)
-  customer?:CustomerEntity|null;
+  customer?:CustomerEntity;
 
   @Expose()
   @Column({ comment: '用户名', unique: true })

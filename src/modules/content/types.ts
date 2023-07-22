@@ -1,7 +1,7 @@
 import { PostEntity } from './entities';
 
 export type PostSearchBody = Pick<ClassToPlain<PostEntity>, 'title' | 'body' | 'summary'> & {
-    categories: string;
+    category: string;
 };
 
 export type SearchType = 'like' | 'against' | 'elastic';

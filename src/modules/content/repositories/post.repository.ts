@@ -11,7 +11,7 @@ export class PostRepository extends BaseRepository<PostEntity> {
   
   buildBaseQB() {
     return this.createQueryBuilder(this.qbName)
-      .leftJoinAndSelect(`${this.qbName}.categories`,'categories')
+      .leftJoinAndSelect(`${this.qbName}.category`,'category')
       .addSelect((subQuery)=>{
         return subQuery.select('COUNT(c.id)','count').from(CommentEntity,'c').where('c.post.id=post.id');
       },'commentCount')

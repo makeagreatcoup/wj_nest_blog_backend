@@ -16,7 +16,14 @@ export const creator = createApp({
     globals: { guard: JwtAuthGuard },
     builder: async ({ configure, BootModule }) => {
         return NestFactory.create<NestFastifyApplication>(BootModule, new FastifyAdapter(), {
-            cors: true,
+            cors: {
+                origin: ['http://localhost:3001'],
+                credentials: true  ,
+                //处理cors预检查
+                methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+                allowedHeaders: ['Content-Type', 'Authorization'],
+                maxAge: 3600
+              },
             logger: ['error', 'warn'],
         });
     },
