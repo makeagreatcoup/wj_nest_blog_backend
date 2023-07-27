@@ -19,7 +19,6 @@ export class LocalAuthGuard extends AuthGuard('local') {
                 validationError: { target: false },
             });
         } catch (errors) {
-            console.log(errors)
             const messages = (errors as any[])
                 .map((e) => e.constraints ?? {})
                 .reduce((o, n) => ({ ...o, ...n }), {});

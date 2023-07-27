@@ -57,6 +57,6 @@ export const defaultUserConfig = (configure: Configure): UserConfig => {
  * 获取user模块配置的值
  * @param key
  */
-export async function getUserConfig<T>(key?: string): Promise<T> {
+export function getUserConfig<T>(key?: string): T {
     return App.configure.get<T>(isNil(key) ? 'user' : `user.${key}`);
 }

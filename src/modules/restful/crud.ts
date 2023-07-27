@@ -48,7 +48,7 @@ export const registerCrud = async <T extends BaseController<any> | BaseControlle
       }
 
       const descriptor = Object.getOwnPropertyDescriptor(Target.prototype, name);
-
+      
       const [, ...params] = Reflect.getMetadata('design:paramtypes', Target.prototype, name);
 
       if (name === 'store' && !isNil(dtos.store)) {
@@ -91,46 +91,45 @@ export const registerCrud = async <T extends BaseController<any> | BaseControlle
       }
       SerializeOptions(serialize)(Target, name, descriptor);
 
-    //   switch (name) {
-    //       case 'list':
-    //           Get(name)(Target, name, descriptor);
-    //           break;
-    //       case 'detail':
-    //           Get(`${name}/:id`)(Target, name, descriptor);
-    //           break;
-    //       case 'store':
-    //           Post(name)(Target, name, descriptor);
-    //           break;
-    //       case 'update':
-    //           Patch(name)(Target, name, descriptor);
-    //           break;
-    //       case 'delete':
-    //           Delete(`${name}/:id`)(Target, name, descriptor);
-    //           break;
-    //       default:
-    //           break;
-    //   }
-    switch (name) {
-        case 'list':
-            Get()(Target, name, descriptor);
-            break;
-        case 'detail':
-            Get(':id')(Target, name, descriptor);
-            break;
-        case 'store':
-            Post()(Target, name, descriptor);
-            break;
-        case 'update':
-            Patch()(Target, name, descriptor);
-            break;
-        case 'delete':
-            Delete()(Target, name, descriptor);
-            break;
-        default:
-            break;
-    }
-
-      if (option.allowGuest) Reflect.defineMetadata(ALLOW_GUEST, true, Target.prototype, name);
-      if (!isNil(option.hook)) option.hook(Target, name);
+      switch (name) {
+          case 'list':
+              Get(name)(Target, name, descriptor);
+              break;
+          case 'detail':
+              Get(`${name}/:id`)(Target, name, descriptor);
+              break;
+          case 'store':
+              Post(name)(Target, name, descriptor);
+              break;
+          case 'update':
+              Patch(name)(Target, name, descriptor);
+              break;
+          case 'delete':
+              Delete(`${name}/:id`)(Target, name, descriptor);
+              break;
+          default:
+              break;
+      }
+    // switch (name) {
+    //     case 'list':
+    //         Get()(Target, name, descriptor);
+    //         break;
+    //     case 'detail':
+    //         Get(':id')(Target, name, descriptor);
+    //         break;
+    //     case 'store':
+    //         Post()(Target, name, descriptor);
+    //         break;
+    //     case 'update':
+    //         Patch()(Target, name, descriptor);
+    //         break;
+    //     case 'delete':
+    //         Delete()(Target, name, descriptor);
+    //         break;
+    //     default:
+    //         break;
+    // }
+    if (option.allowGuest) Reflect.defineMetadata(ALLOW_GUEST, true, Target.prototype, name);
+    if (!isNil(option.hook)) option.hook(Target, name);
   }
 };

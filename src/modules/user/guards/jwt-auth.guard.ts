@@ -23,18 +23,20 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
      * @param context
      */
     async canActivate(context: ExecutionContext) {
+        const request = this.getRequest(context);
+        const response = this.getResponse(context);
+
+        const url = request.url;
         const crudGuest = Reflect.getMetadata(
             ALLOW_GUEST,
             context.getClass().prototype,
-            context.getHandler().name,
+            this.getFuncNameByUrl(url),
         );
         const defaultGuest = this.reflector.getAllAndOverride<boolean>(ALLOW_GUEST, [
             context.getHandler(),
             context.getClass(),
         ]);
         const allowGuest = crudGuest ?? defaultGuest;
-        const request = this.getRequest(context);
-        const response = this.getResponse(context);
         // if (!request.headers.authorization) return false;
         // 从请求头中获取token
         // 如果请求头不含有authorization字段则认证失败
@@ -45,6 +47,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
             ? undefined
             : await this.tokenService.checkAccessToken(requestToken!);
         if (isNil(accessToken) && !allowGuest) throw new UnauthorizedException();
+
         try {
             // 检测token是否为损坏或过期的无效状态,如果无效则尝试刷新token
             const result = await super.canActivate(context);
@@ -91,5 +94,17 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
     protected getResponse(context: ExecutionContext) {
         return context.switchToHttp().getResponse();
+    }
+
+    private getFuncNameByUrl(url:string){
+        const paths = url.split('/');
+        // 获取最后一段作为方法名
+        let methodName = paths[paths.length - 1];
+
+        // 如果是参数路径,则取倒数第二段
+        if (methodName.includes(':')) {
+            methodName = paths[paths.length - 2];
+        }
+        return methodName;
     }
 }

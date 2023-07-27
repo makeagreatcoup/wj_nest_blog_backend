@@ -16,13 +16,16 @@ export class AppIntercepter extends ClassSerializerInterceptor{
     if('meta' in response && 'items' in response){
       const items=!isNil(response.items)&&isArray(response.items)?response.items:[];
       return {
-        ...response,
-        items:(items as PlainLiteralObject[]).map(
-          (item)=>!isObject(item)?item:this.transformToPlain(item,options)
-        )
+        data:{
+          items:(items as PlainLiteralObject[]).map(
+            (item)=>!isObject(item)?item:this.transformToPlain(item,options)
+          ),
+          meta:response.meta
+        },
+        
       }
     }
     // 对象直接序列化
-    return this.transformToPlain(response, options);
+    return {data:this.transformToPlain(response, options)};
   }
 }

@@ -100,13 +100,13 @@ export class Configure {
    * @param key
    * @param defaultValue
    */
-  async get<T>(key: string, defaultValue?: T): Promise<T> {
+  get<T>(key: string, defaultValue?: T): T {
     if (
       !has(this.config, key) &&
       defaultValue === undefined &&
       has(this.factories, key)
     ) {
-      await this.syncFactory(key);
+      this.syncFactory(key);
       return this.get(key, defaultValue);
     }
     return get(this.config, key, defaultValue) as T;

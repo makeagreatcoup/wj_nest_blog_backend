@@ -74,7 +74,7 @@ export function createHookOption(
         allowGuest,
         hook: (target, method) => {
             if (!isNil(summary))
-                ApiOperation({ summary })(
+                ApiOperation({operationId:method, summary })(
                     target,
                     method,
                     Object.getOwnPropertyDescriptor(target.prototype, method),
