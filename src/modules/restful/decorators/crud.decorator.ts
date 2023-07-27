@@ -13,7 +13,10 @@ import { CrudOptionsRegister } from "../type";
 export const Crud = (factory:CrudOptionsRegister)=>
   <T extends BaseController<any>|BaseControllerWithTrash<any>>(Target:Type<T>)=>
   {
+    // 设置自定义元数据
     Reflect.defineMetadata(CRUD_OPTIONS_REGISTER,factory,Target);
+    // 设置参数类型元数据
+    // Reflect.defineMetadata('design:paramtypes', [Target], Target); 
   }
 
 /**

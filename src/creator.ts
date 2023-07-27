@@ -20,7 +20,7 @@ export const creator = createApp({
                 origin: ['http://localhost:3001'],
                 credentials: true  ,
                 //处理cors预检查
-                methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+                methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS','PATCH'],
                 allowedHeaders: ['Content-Type', 'Authorization'],
                 maxAge: 3600
               },

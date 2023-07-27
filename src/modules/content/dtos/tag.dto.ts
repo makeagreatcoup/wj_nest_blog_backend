@@ -12,13 +12,13 @@ export class CreateTagDto {
   @ApiProperty({
     description: '标签名称',
     uniqueItems: true,
-    maxLength: 5,
+    maxLength: 20,
   })
   @IsUniqueExist(TagEntity, {
       groups: ['update'],
       message: '标签名称重复',
   })
-  @MaxLength(5,{always:true,message:'标签名称长度不能超过$constraint1'})
+  @MaxLength(20,{always:true,message:'标签名称长度不能超过$constraint1'})
   @IsNotEmpty({groups:['create'],message:'标签名称不得为空'})
   @IsOptional({ groups: ['update'] })
   title: string;

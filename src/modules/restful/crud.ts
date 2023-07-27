@@ -105,7 +105,7 @@ export const registerCrud = async <T extends BaseController<any> | BaseControlle
               Patch(name)(Target, name, descriptor);
               break;
           case 'delete':
-              Delete(`${name}/:id`)(Target, name, descriptor);
+              Delete(name)(Target, name, descriptor);
               break;
           default:
               break;

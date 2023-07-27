@@ -22,8 +22,7 @@ export class TagService extends BaseService<TagEntity,TagRepository>{
   }
 
   async update(data: UpdateTagDto): Promise<TagEntity> {
-    const user=await this.detail(data.id);
-    await this.repository.update(data.id, omit({...data,user}, ['id']));
+    await this.repository.update(data.id, omit({...data}, ['id']));
     return this.detail(data.id);
   }
 }
