@@ -11,7 +11,7 @@ export class CustomerRepository extends BaseRepository<CustomerEntity> {
   protected orderBy = 'createdAt';
   
   buildBaseQB() {
-    return this.createQueryBuilder(this.qbName)
+    return super.buildBaseQB()
       .leftJoinAndSelect(`${this.qbName}.user`,'user')
       
       ;

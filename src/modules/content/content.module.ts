@@ -2,39 +2,40 @@ import { ModuleMetadata } from '@nestjs/common';
 
 import { ModuleBuilder } from '../core/decorators/module-builder.decorator';
 import { DatabaseModule } from '../database/database.module';
-import { addEntities, addSubscribers } from '../database/helpers';
+import { addEntities } from '../database/helpers';
 
 import * as entities from './entities';
 import * as repositories from './repositories';
-import { CategoryRepository, PostRepository } from './repositories';
+import { CategoryRepository, PostRepository, TagRepository } from './repositories';
 import * as services from './services';
 import { CategoryService } from './services';
 import { PostService } from './services/post.service';
 import { SearchService } from './services/search.service';
-import { PostSubscriber } from './subscribers';
 import {SearchType } from './types';
 
 @ModuleBuilder(async configure=>{
-  const searchType = await configure.get<SearchType>('content.searchType','against');
+  const searchType = configure.get<SearchType>('content.searchType','against');
   const providers:ModuleMetadata['providers']=[
     ...Object.values(services),
-    ...await addSubscribers(configure,[PostSubscriber]),
+    // ...await addSubscribers(configure,[PostSubscriber]),
     {
       provide:PostService,
       inject:[
         PostRepository,
         CategoryRepository,
+        TagRepository,
         CategoryService,
         {token:SearchService,optional:true}
       ],
       useFactory(
         postRepository:PostRepository,
         categoryRepository:CategoryRepository,
+        tagRepository:TagRepository,
         categoryService:CategoryService,
         searchService?:SearchService
       ){
         return new PostService(
-          postRepository,categoryRepository,categoryService,searchService,searchType
+          postRepository,categoryRepository,tagRepository,categoryService,searchService,searchType
         )
       }
     }

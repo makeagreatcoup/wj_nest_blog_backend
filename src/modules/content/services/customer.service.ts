@@ -16,6 +16,16 @@ export class CustomerService extends BaseService<CustomerEntity,CustomerReposito
     super(repository)
   }
 
+    /**
+   * 查询数组
+   */
+    async searchList(){
+      return this.repository.buildSingleQB()
+        .select(["id", "nickname"])
+        .getRawMany();
+    }
+
+
   async create(data: CreateCustomerDto): Promise<CustomerEntity> {
     const item = await this.repository.save({
       ...data,

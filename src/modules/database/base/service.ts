@@ -10,6 +10,7 @@ import { IPaginateOptions, IPaginateResult, QueryHook, ServiceListQueryOption } 
 import { BaseRepository } from "./repository";
 import { BaseTreeRepository } from "./tree.repository";
 
+
 export abstract class BaseService<E extends ObjectLiteral,R extends BaseRepository<E>|BaseTreeRepository<E>,P extends ServiceListQueryOption<E> = ServiceListQueryOption<E>>{
   
   /**
@@ -148,15 +149,18 @@ export abstract class BaseService<E extends ObjectLiteral,R extends BaseReposito
         relations:['parent','children']
       })
       if(this.repository.childrenResolve===TreeChildrenResolve.UP){
-        items.forEach(async item=>{
-          if(!isNil(item.children)&&item.children.length>0) {
-            const nchildren=[...item.children].map(e=>{
-              e.parent=item.parent;
-              return item;
-            })
-            await this.repository.save(nchildren)
-          }
-        })
+        await Promise.all(
+          items.map(async item=>{
+            if(!isNil(item.children)&&item.children.length>0) {
+              const nchildren=[...item.children].map(e=>{
+                e.parent=item.parent;
+                return item;
+              })
+              await this.repository.save(nchildren)
+            }
+          })
+        )
+        
       }
     }else{
       items=await this.repository.find({

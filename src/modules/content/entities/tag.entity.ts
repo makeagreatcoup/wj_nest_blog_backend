@@ -16,7 +16,7 @@ import { PostEntity } from './post.entity';
 export class TagEntity extends BaseEntity {
 
   @Expose()
-  @Column({ comment: '标签名称' })
+  @Column({ comment: '标签名称' ,unique: true})
   title!: string;
 
   @Expose()

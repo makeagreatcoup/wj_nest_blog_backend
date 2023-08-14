@@ -4,6 +4,7 @@ import {
   DeleteDateColumn,
   Entity,
   Index,
+  JoinColumn,
   JoinTable,
   ManyToMany,
   ManyToOne,
@@ -23,8 +24,8 @@ import { TagEntity } from './tag.entity';
 export class PostEntity extends BaseEntity {
 
   @Expose()
-  @Column({ comment: '文章标题' })
-  @Index({fulltext:true})
+  @Column({ comment: '文章标题'})
+  @Index({fulltext:true,unique: true})
   title!: string;
 
   @Expose({ groups: ['post-detail'] })
@@ -79,9 +80,12 @@ export class PostEntity extends BaseEntity {
     // 新增文章时，如果所属分类不存在则直接创建
     cascade:true
   })
+  @JoinColumn()
+  @Expose()
   @Index({fulltext:true})
   category!:CategoryEntity;
 
+  @Expose()
   @ManyToMany(()=>TagEntity,tags=>tags.posts)
   @JoinTable()
   tags?:TagEntity[];

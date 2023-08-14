@@ -57,8 +57,7 @@ export class CategoryService extends BaseService<CategoryEntity,CategoryReposito
    */
   async update(data: UpdateCategoryDto) {
     const parent = await this.getParent(data.id, data.parent);
-    const querySet = omit(data, ['id', 'parent']);
-
+    const querySet = omit({...data,parent}, ['id','depth','parent']);
     if (Object.keys(querySet).length > 0) {
       await this.repository.update(data.id, querySet);
     }

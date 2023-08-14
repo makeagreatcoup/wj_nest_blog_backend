@@ -110,25 +110,7 @@ export const registerCrud = async <T extends BaseController<any> | BaseControlle
           default:
               break;
       }
-    // switch (name) {
-    //     case 'list':
-    //         Get()(Target, name, descriptor);
-    //         break;
-    //     case 'detail':
-    //         Get(':id')(Target, name, descriptor);
-    //         break;
-    //     case 'store':
-    //         Post()(Target, name, descriptor);
-    //         break;
-    //     case 'update':
-    //         Patch()(Target, name, descriptor);
-    //         break;
-    //     case 'delete':
-    //         Delete()(Target, name, descriptor);
-    //         break;
-    //     default:
-    //         break;
-    // }
+
     if (option.allowGuest) Reflect.defineMetadata(ALLOW_GUEST, true, Target.prototype, name);
     if (!isNil(option.hook)) option.hook(Target, name);
   }

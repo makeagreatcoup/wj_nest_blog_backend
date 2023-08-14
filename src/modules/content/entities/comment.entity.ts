@@ -1,4 +1,4 @@
-import { Exclude, Expose} from "class-transformer";
+import { Exclude, Expose, Type} from "class-transformer";
 import {  Column, Entity, ManyToOne, Tree, TreeChildren, TreeParent } from "typeorm";
 
 import { BaseEntity } from "@/modules/database/base/entity";
@@ -38,10 +38,13 @@ export class CommentEntity extends BaseEntity{
   })
   customer:CustomerEntity;
 
+  @Expose({groups:['comment-detail','comment-list','comment-tree']})
+  @Type(()=>CommentEntity)
   @TreeParent({onDelete:'CASCADE'})
-  parent:CommentEntity|null;
+  parent!:CommentEntity|null;
 
-  @Expose()
+  @Expose({ groups: ['comment-tree'] })
+  @Type(()=>CommentEntity)
   @TreeChildren({cascade:true})
-  children:CommentEntity[];
+  children!:CommentEntity[];
 }

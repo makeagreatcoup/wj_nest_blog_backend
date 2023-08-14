@@ -16,6 +16,12 @@ export class TagService extends BaseService<TagEntity,TagRepository>{
     super(repository)
   }
 
+  async searchList(){
+    return this.repository.buildSingleQB()
+      .select(["id", "title","color"])
+      .getRawMany();
+  }
+
   async create(data: CreateTagDto): Promise<TagEntity> {
     const item = await this.repository.save(data);
     return this.detail(item.id);

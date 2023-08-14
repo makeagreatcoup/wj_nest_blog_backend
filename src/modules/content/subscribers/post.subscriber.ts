@@ -31,6 +31,8 @@ export class PostSubscriber extends BaseSubscriber<PostEntity>{
    */
   async afterLoad(post: PostEntity) {
     const sanitizeService=App.app.get(SanitizeService,{strict:false});
+    console.log(sanitizeService)
+    console.log(this.sanitizeService)
     if (post.type === PostBodyType.HTML&&!isNil(sanitizeService)) {
       post.body = this.sanitizeService.sanitize(post.body);
     }

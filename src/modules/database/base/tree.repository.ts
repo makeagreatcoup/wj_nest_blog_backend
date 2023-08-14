@@ -43,7 +43,7 @@ export class BaseTreeRepository<E extends ObjectLiteral> extends TreeRepository<
    */
   buildBaseQB(qb?:SelectQueryBuilder<E>):SelectQueryBuilder<E>{
     const queryBuilder=qb??this.createQueryBuilder(this.qbName);
-    return queryBuilder.leftJoinAndSelect(`${this.qbName}.parent`,'parent');
+    return queryBuilder.leftJoinAndSelect(`${this.qbName}.parent`,'parent').orderBy(`${this.qbName}.updateAt`, 'ASC');
   }
 
   /**

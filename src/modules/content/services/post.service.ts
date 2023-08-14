@@ -16,8 +16,7 @@ import { SearchType } from '@/modules/search/type';
 
 import { CreatePostDto, QueryPostDto, UpdatePostDto } from '../dtos';
 import { PostEntity } from '../entities/post.entity';
-import { CategoryRepository } from '../repositories/category.repository';
-import { PostRepository } from '../repositories/post.repository';
+import { TagRepository,CategoryRepository,PostRepository } from '../repositories';
 
 import { CategoryService } from './category.service';
 import { SearchService } from './search.service';
@@ -35,11 +34,21 @@ export class PostService extends BaseService<PostEntity,PostRepository,FindParam
   constructor(
     protected repository: PostRepository,
     protected categoryRepository: CategoryRepository,
+    protected tagRepository: TagRepository,
     protected categoryService: CategoryService,
     protected searchService: SearchService,
     protected searchType: SearchType = 'against',
   ) {
     super(repository)
+  }
+
+  /**
+   * 查询标题的数组
+   */
+  async titleList(){
+    return this.repository.buildSingleQB()
+      .select(["post.id as id", "title"])
+      .getRawMany();
   }
 
   /**
@@ -68,6 +77,7 @@ export class PostService extends BaseService<PostEntity,PostRepository,FindParam
       options,
       callback,
     );
+    console.log(qb.getSql())
     return paginate(qb, options);
   }
 
@@ -79,7 +89,7 @@ export class PostService extends BaseService<PostEntity,PostRepository,FindParam
    */
   async findById(id: string, callback?: QueryHook<PostEntity>) {
     let qb = this.repository.buildBaseQB();
-    qb.where('id=:id', { id });
+    qb.where(`${this.repository.qbName}.id=:id`, { id });
     qb = !isNil(callback) && isFunction(callback) ? await callback(qb) : qb;
     const item = await qb.getOne();
     if (!item) {
@@ -102,6 +112,9 @@ export class PostService extends BaseService<PostEntity,PostRepository,FindParam
     // };
     const createDto = {
       ...data,
+      tags: data.tags&&data.tags.length
+        ? await this.tagRepository.findBy({ id: In(data.tags) })
+        : [],
       category:await this.categoryRepository.findOneBy({id:data.category})
     }
     const item = await this.repository.save(createDto);
@@ -129,8 +142,9 @@ export class PostService extends BaseService<PostEntity,PostRepository,FindParam
     //     .of(post)
     //     .addAndRemove(data.category, post.category ?? '');
     // }
+    const tags=data.tags&&data.tags.length?await this.tagRepository.findBy({ id: In(data.tags) }):[]
     const category=await this.categoryRepository.findOneBy({id:data.category})
-    await this.repository.update(data.id, omit({...data,category}, ['id']));
+    await this.repository.update(data.id, omit({...data,category,tags}, ['id']));
 
     if (!isNil(this.searchService)) {
       try {
@@ -268,11 +282,8 @@ export class PostService extends BaseService<PostEntity,PostRepository,FindParam
         return qb.orderBy('customOrder', 'DESC');
       default:
         return qb
-          .orderBy('createdAt', 'DESC')
-          .orderBy('updateAt', 'DESC')
-          .orderBy('publishedAt', 'DESC')
-          .orderBy('customOrder', 'DESC')
-          .orderBy('commentCount', 'DESC');
+          .addOrderBy('createdAt', 'DESC')
+          .addOrderBy('commentCount', 'DESC');
     }
   }
 
@@ -290,6 +301,6 @@ export class PostService extends BaseService<PostEntity,PostRepository,FindParam
     const tree = await this.categoryRepository.findDescendantsTree(root);
     const flatDes = await this.categoryRepository.toFlatTrees(tree.children);
     const ids = [tree.id, ...flatDes.map((item) => item.id)];
-    return qb.where('category_id IN (:...ids)', { ids });
+    return qb.where('categoryId IN (:...ids)', { ids });
   }
 }

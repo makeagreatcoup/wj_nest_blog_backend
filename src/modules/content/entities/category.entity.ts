@@ -12,7 +12,7 @@ export class CategoryEntity extends BaseEntity{
 
   @Expose()
   @Column({comment:'分类名称'})
-  @Index({fulltext:true})
+  @Index({fulltext:true,unique:true})
   name!:string;
 
   @Expose({groups:['category-tree','category-list', 'category-detail']})
@@ -25,7 +25,7 @@ export class CategoryEntity extends BaseEntity{
   @Expose({groups:['category-list']})
   depth = 0;
 
-  @Expose({groups:['category-detail','category-list']})
+  @Expose({groups:['category-detail','category-list','category-tree']})
   @Type(()=>CategoryEntity)
   @TreeParent({onDelete:'NO ACTION'})
   parent!:CategoryEntity|null;

@@ -1,97 +1,117 @@
-import { Injectable } from "@nestjs/common";
-import { DataSource, EntityNotFoundError, SelectQueryBuilder } from "typeorm";
+import { Injectable } from '@nestjs/common';
+import { DataSource, EntityNotFoundError, SelectQueryBuilder } from 'typeorm';
 
-import { Configure } from "@/modules/core/configure";
-import { BaseService } from "@/modules/database/base";
+import { Configure } from '@/modules/core/configure';
+import { BaseService } from '@/modules/database/base';
 
-import { QueryHook } from "@/modules/database/types";
+import { QueryHook } from '@/modules/database/types';
 
-import { CreateUserDto, QueryUserDto, UpdateUserDto } from "../dtos/user.dto";
-import { UserEntity } from "../entities";
-import { UserRepository } from "../repositories";
+import { CreateUserDto, QueryUserDto, UpdateUserDto } from '../dtos/user.dto';
+import { UserEntity } from '../entities';
+import { UserRepository } from '../repositories';
 
 /**
  * 用户管理服务
  */
 @Injectable()
-export class UserService extends BaseService<UserEntity,UserRepository>{
-
+export class UserService extends BaseService<UserEntity, UserRepository> {
   protected enableTrash = true;
 
   constructor(
-    protected readonly userRepository:UserRepository,
-    protected configure:Configure,
-    protected dataSource:DataSource
-  ){
+    protected readonly userRepository: UserRepository,
+    protected configure: Configure,
+    protected dataSource: DataSource,
+  ) {
     super(userRepository);
   }
 
   /**
    * 创建
-   * @param data 
-   * @returns 
+   * @param data
+   * @returns
    */
-  async create(data:CreateUserDto){
-    const user = await this.userRepository.save(data,{reload:true});
+  async create(data: CreateUserDto) {
+    const user = await this.userRepository.save(data, { reload: true });
     return this.detail(user.id);
   }
 
   /**
    * 更新
-   * @param data 
-   * @returns 
+   * @param data
+   * @returns
    */
-  async update(data:UpdateUserDto){
-    const user=await this.userRepository.save(data);
+  async update(data: UpdateUserDto) {
+    const user = await this.userRepository.save(data);
     return this.detail(user.id);
   }
 
   /**
    * 根据用户凭证查询用户
-   * @param credential 
-   * @param callback 
-   * @returns 
+   * @param credential
+   * @param callback
+   * @returns
    */
-  async findOneByCredential(credential:string,callback?:QueryHook<UserEntity>){
-    let query=this.userRepository.buildBaseQuery();
-    if(callback){
-      query=await callback(query);
+  async findOneByCredential(
+    credential: string,
+    callback?: QueryHook<UserEntity>,
+  ) {
+    let query = this.userRepository.buildBaseQuery();
+    if (callback) {
+      query = await callback(query);
     }
     return query
-    .where('user.username = :credential',{credential})
-    .orWhere('user.email = :credential',{credential})
-    .orWhere('user.phone = :credential',{credential})
-    .getOne()
+      .where('user.username = :credential', { credential })
+      .orWhere('user.email = :credential', { credential })
+      .orWhere('user.phone = :credential', { credential })
+      .getOne();
   }
 
-      /**
-     * 根据对象条件查找用户,不存在则抛出异常
-     * @param condition
-     * @param callback
-     */
-      async findOneByCondition(condition: { [key: string]: any }, callback?: QueryHook<UserEntity>) {
-        let query = this.userRepository.buildBaseQuery();
-        if (callback) {
-            query = await callback(query);
-        }
-        const wheres = Object.fromEntries(
-            Object.entries(condition).map(([key, value]) => [key, value]),
-        );
-        const user = query.where(wheres).getOne();
-        if (!user) {
-            throw new EntityNotFoundError(UserEntity, Object.keys(condition).join(','));
-        }
-        return user;
-    }
+  /**
+   * 根据用户id查询用户及关联数据
+   * @param credential
+   * @param callback
+   * @returns
+   */
+  async findOneById(id: string) {
+    const query = this.userRepository.buildBaseQuery();
+    query.where(`${this.repository.qbName}.id=:id`, { id });
+    return query.getOne();
+  }
 
-    protected async buildListQB(
-        queryBuilder: SelectQueryBuilder<UserEntity>,
-        options: QueryUserDto,
-        callback?: QueryHook<UserEntity>,
-    ) {
-        const { orderBy } = options;
-        const qb = await super.buildListQB(queryBuilder, options, callback);
-        if (orderBy) qb.orderBy(`user.${orderBy}`, 'ASC');
-        return qb;
+  /**
+   * 根据对象条件查找用户,不存在则抛出异常
+   * @param condition
+   * @param callback
+   */
+  async findOneByCondition(
+    condition: { [key: string]: any },
+    callback?: QueryHook<UserEntity>,
+  ) {
+    let query = this.userRepository.buildBaseQuery();
+    if (callback) {
+      query = await callback(query);
     }
+    const wheres = Object.fromEntries(
+      Object.entries(condition).map(([key, value]) => [key, value]),
+    );
+    const user = query.where(wheres).getOne();
+    if (!user) {
+      throw new EntityNotFoundError(
+        UserEntity,
+        Object.keys(condition).join(','),
+      );
+    }
+    return user;
+  }
+
+  protected async buildListQB(
+    queryBuilder: SelectQueryBuilder<UserEntity>,
+    options: QueryUserDto,
+    callback?: QueryHook<UserEntity>,
+  ) {
+    const { orderBy } = options;
+    const qb = await super.buildListQB(queryBuilder, options, callback);
+    if (orderBy) qb.orderBy(`user.${orderBy}`, 'ASC');
+    return qb;
+  }
 }

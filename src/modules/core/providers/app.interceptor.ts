@@ -8,9 +8,12 @@ export class AppIntercepter extends ClassSerializerInterceptor{
     }
     // 数组对每一项进行序列化
     if(isArray(response)){
-      return (response as PlainLiteralObject[]).map((item)=>
-        !isObject(item)?item:this.transformToPlain(item,options)
-      )
+      return {
+        data:{
+          items:(response as PlainLiteralObject[]).map((item)=>
+          !isObject(item)?item:this.transformToPlain(item,options)
+        )
+        }}
     }
     // 分页数据，对items每一项进行序列话
     if('meta' in response && 'items' in response){

@@ -1,16 +1,19 @@
 import { ForbiddenException, Injectable } from "@nestjs/common";
-import { isNil } from "lodash";
+import { isNil} from "lodash";
 import { EntityNotFoundError, SelectQueryBuilder } from "typeorm";
 
 import { BaseService } from "@/modules/database/base/service";
 
-import { CreateCommentDto, QueryCommentDto, QueryCommentTreeDto } from "../dtos/comment.dto";
+import { treePaginate } from "@/modules/database/helpers";
+
+import { CreateCommentDto, QueryCommentDto, QueryCommentTreeDto, QueryCommentTreePaginateDto } from "../dtos/comment.dto";
 import { CommentEntity } from "../entities/comment.entity";
-import { PostRepository,CommentRepository } from "../repositories";
+import { PostRepository,CommentRepository, CustomerRepository } from "../repositories";
 
 @Injectable()
 export class CommentService extends BaseService<CommentEntity,CommentRepository>{
   constructor(protected repository:CommentRepository,
+    protected customerRepository:CustomerRepository,
     protected postRepository:PostRepository){
       super(repository)
     }
@@ -20,14 +23,34 @@ export class CommentService extends BaseService<CommentEntity,CommentRepository>
    * @param options 分页条件
    * @returns 
    */
-  async findTrees(options:QueryCommentTreeDto={}){
+  async findTrees(options:QueryCommentTreeDto){
+    const {postId,customerId} = options
     return this.repository.findTrees({
       addQuery:async qb=>{
-        return isNil(options.postId)?qb:qb.andWhere('comment.postId = :postId',{postId:options.postId})
+        qb.andWhere(postId ? 'comment.postId = :postId' : '1=1', { postId })
+        qb.andWhere(customerId ? 'comment.customerId = :customerId' : '1=1', { customerId })
+        return qb
       }
     })
   }
 
+  /**
+   * 可分页的树结构
+   * @param options 
+   * @returns 
+   */
+  async treesPaginate(options:QueryCommentTreePaginateDto){
+    const {postId,customerId} = options
+    const data = await this.repository.findTrees({
+      addQuery:async qb=>{
+        qb.andWhere(postId ? 'comment.postId = :postId' : '1=1', { postId })
+        qb.andWhere(customerId ? 'comment.customerId = :customerId' : '1=1', { customerId })
+        return qb
+      }
+    })
+    return treePaginate(options,data)
+  }
+  
   /**
    * 查询文章的评论并分页
    * @param dto 评论对象
@@ -58,9 +81,10 @@ export class CommentService extends BaseService<CommentEntity,CommentRepository>
     if(!isNil(parent)&&parent.post.id!==data.post){
       throw new ForbiddenException('评论ID数据错误');
     }
-    const item=await this.repository.save({
-      ...data,parent,post:await this.getPost(data.post)
-    })
+    const customer=await this.customerRepository.findOneBy({id:data.customer})
+    const {body}=data
+    const post = await this.getPost(data.post)
+    const item=await this.repository.save({body,parent,customer,post})
     return this.repository.findOneOrFail({where:{id:item.id}});
   }
 

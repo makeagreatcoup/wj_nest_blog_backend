@@ -1,7 +1,7 @@
 import {
-  Controller,
+  Controller, Get, SerializeOptions,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { BaseController } from '@/modules/restful/base';
 import { Crud, Depends } from '@/modules/restful/decorators';
@@ -46,5 +46,11 @@ export class TagController extends BaseController<TagService>{
     super(service)
   }
   
+  @Get('searchList')
+  @ApiOperation({summary:'获取所有标签名称'})
+  @SerializeOptions({ groups: ['tag-list'] })
+  async searchList() {
+    return this.service.searchList();
+  }
 }
 

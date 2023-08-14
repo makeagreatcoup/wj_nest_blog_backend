@@ -1,7 +1,7 @@
 import {
-  Controller,
+  Controller, Get, SerializeOptions,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { BaseControllerWithTrash } from '@/modules/restful/base/trashed.controller';
 import { Crud, Depends } from '@/modules/restful/decorators';
@@ -50,6 +50,12 @@ export class PostController extends BaseControllerWithTrash<PostService>{
   constructor(protected service: PostService) {
     super(service)
   }
-  
+
+  @Get('titleList')
+  @ApiOperation({summary:'获取标题数组'})
+  @SerializeOptions({ groups: ['post-list'] })
+  async titleList() {
+    return this.service.titleList();
+  }
 }
 

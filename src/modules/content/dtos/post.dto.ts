@@ -151,12 +151,19 @@ export class CreatePostDto {
       message: '分类不存在',
   })
   @IsUUID(undefined, {
-    each: true,
     always: true,
     message: '分类ID格式不正确',
   })
   @IsOptional({ always: true })
   category?: string;
+
+  @IsUUID(undefined, {
+    each: true,
+    always: true,
+    message: '标签ID格式不正确',
+  })
+  @IsOptional({ always: true })
+  tags?: string[];
 
   @ApiPropertyOptional({
     description: '自定义排序',

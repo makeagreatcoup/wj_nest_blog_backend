@@ -11,7 +11,7 @@ export class TagRepository extends BaseRepository<TagEntity> {
   protected orderBy = 'createdAt';
   
   buildBaseQB() {
-    return this.createQueryBuilder(this.qbName)
+    return super.buildBaseQB()
       .leftJoinAndSelect(`${this.qbName}.posts`,'posts')
       
       ;

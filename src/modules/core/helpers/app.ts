@@ -46,7 +46,7 @@ export async function bootApp(
     listened?: (prarms:CreatorData)=>()=>Promise<void>
 ) {
     const { app,configure } = await creator();
-    const {port , host } = await configure.get<AppConfig>('app');
+    const {port , host } = configure.get<AppConfig>('app');
     await app.listen(port, host, listened({app,configure} as any));
 }
 

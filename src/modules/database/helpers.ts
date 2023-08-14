@@ -4,6 +4,7 @@ import { Type } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { EntityClassOrSchema } from '@nestjs/typeorm/dist/interfaces/entity-class-or-schema.type';
 import { isNil } from 'lodash';
+import { Ora } from 'ora';
 import {
   DataSource,
   DataSourceOptions,
@@ -21,6 +22,7 @@ import { CUSTOM_REPOSITORY_METADATA, EnvironmentType } from '../core/constants';
 import { createConnectionOptions, deepMerge, panic } from '../core/helpers';
 import { ConfigureFactory, ConfigureRegister } from '../core/type';
 
+import { FactoryResolver } from './resolver';
 import {
   DbConfig,
   DbConfigOptions,
@@ -34,8 +36,6 @@ import {
   SeederOptions,
   TypeormOption,
 } from './types';
-import { FactoryResolver } from './resolver';
-import { Ora } from 'ora';
 
 export const createDbOptions = (
   configure: Configure,
@@ -91,7 +91,7 @@ export const createDbConfig: (
  * @param cname 默认为default
  */
 export async function getDbConfig(cname = 'default') {
-  const { connections = [] }: DbConfig = await App.configure.get<DbConfig>('database');
+  const { connections = [] }: DbConfig = App.configure.get<DbConfig>('database');
   const dbConfig = connections.find(({ name }) => name === cname);
   if (isNil(dbConfig)) panic(`Database connection named ${cname} not exists!`);
   return dbConfig as TypeormOption;
@@ -136,20 +136,17 @@ export const paginate = async <T extends ObjectLiteral>(
 export function treePaginate<T extends ObjectLiteral>(
   options: IPaginateOptions,
   data: T[],
-): IPaginateResult<T> {
-  const { page, limit } = options;
+ ): IPaginateResult<T> {
+  const { page, limit  } = options;
   let items: T[] = [];
   const totalItems = data.length;
-  const totalRst = totalItems / limit;
-  const totalPages =
-    totalRst > Math.floor(totalRst)
-      ? Math.floor(totalRst) + 1
-      : Math.floor(totalRst);
-
+  const totalRst = Math.ceil(totalItems / limit);
+  const totalPages = totalRst;
+ 
   let itemCount = 0;
-  if (page <= totalPages) {
+  if (page >= 1 && page <= totalPages) {
     itemCount =
-      page === totalPages ? totalItems - (totalPages - 1) * limit : limit;
+      page === totalPages ? totalItems - (totalPages - 1) * limit : limit * 1;
     const start = (page - 1) * limit;
     items = data.slice(start, start + itemCount);
   }
@@ -163,7 +160,7 @@ export function treePaginate<T extends ObjectLiteral>(
     },
     items,
   };
-}
+ }
 
 /**
  * 获取自定义repository的实例
@@ -198,7 +195,7 @@ export const addEntities = async (
   entities: EntityClassOrSchema[] = [],
   dataSource = 'default',
 ) => {
-  const database = await configure.get<DbConfig>('database');
+  const database = configure.get<DbConfig>('database');
   if (isNil(database)) throw new Error(`Typeorm 配置找不到!`);
   const dbConfig = database.connections.find(({ name }) => name === dataSource);
   // eslint-disable-next-line prettier/prettier, prefer-template
@@ -233,7 +230,7 @@ export const addSubscribers = async (
   subscribers: Type<any>[] = [],
   dataSource = 'default',
 ) => {
-  const database = await configure.get<DbConfig>('database');
+  const database = configure.get<DbConfig>('database');
   if (isNil(database)) throw new Error(`Typeorm 配置找不到!`);
   const dbConfig = database.connections.find(({ name }) => name === dataSource);
   if (isNil(dbConfig))

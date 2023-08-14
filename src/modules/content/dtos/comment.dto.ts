@@ -15,16 +15,29 @@ export class QueryCommentDto extends ListQueryDto{
   @IsDataExist(PostEntity, {
     message: '所属的文章不存在',
   })
-  @IsUUID(undefined,{message:'分类ID格式错误'})
+  @IsUUID(undefined,{message:'评论所属文章ID格式错误'})
   @IsOptional()
   postId?:string;
+
+  @ApiPropertyOptional({
+    description: '评论人ID:根据传入评论人的ID对评论进行过滤',
+  })
+  @IsUUID(undefined,{message:'评论人ID格式错误'})
+  @IsOptional()
+  customerId?:string;
 }
 
 /**
  * 评论树查询
  */
 @DtoValidation({ type: 'query' })
-export class QueryCommentTreeDto extends PickType(QueryCommentDto,['postId']){}
+export class QueryCommentTreeDto extends PickType(QueryCommentDto,['postId','customerId']){}
+
+/**
+ * 评论树分页查询
+ */
+@DtoValidation({ type: 'query' })
+export class QueryCommentTreePaginateDto extends QueryCommentDto{}
 
 @DtoValidation({groups:['create']})
 export class CreateCommentDto{
@@ -48,10 +61,13 @@ export class CreateCommentDto{
     description: '父级评论ID',
   })
   @IsDataExist(CommentEntity, { message: '父评论不存在' })
-  @IsUUID(undefined,{always:true,message:'父类评论ID格式不正确'})
-  @ValidateIf((value)=>value.parent!==null&&value.parent)
+  @ValidateIf((value) => value && typeof value.parent === 'string' && value.parent.trim() !== '')
+  @IsUUID(undefined, { always: false, message: '父类评论ID格式不正确' })
   @IsOptional()
   parent?:string;
 
-  
+  @ApiProperty({
+    description: 'ID',
+  })
+  customer:string;
 }

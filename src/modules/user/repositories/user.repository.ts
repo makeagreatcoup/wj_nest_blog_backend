@@ -8,6 +8,8 @@ export class UserRepository extends BaseRepository<UserEntity> {
     protected _qbName = 'user';
 
     buildBaseQuery() {
-        return this.createQueryBuilder(this.qbName).orderBy(`${this.qbName}.createdAt`, 'DESC');
+        return this.createQueryBuilder(this.qbName)
+        .leftJoinAndSelect(`${this.qbName}.customer`,'customer')
+        .orderBy(`${this.qbName}.createdAt`, 'DESC');
     }
 }

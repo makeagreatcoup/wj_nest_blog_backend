@@ -10,8 +10,9 @@ export class PostRepository extends BaseRepository<PostEntity> {
   protected _qbName='post';
   
   buildBaseQB() {
-    return this.createQueryBuilder(this.qbName)
+    return super.buildBaseQB()
       .leftJoinAndSelect(`${this.qbName}.category`,'category')
+      .leftJoinAndSelect(`${this.qbName}.tags`,'tags')
       .addSelect((subQuery)=>{
         return subQuery.select('COUNT(c.id)','count').from(CommentEntity,'c').where('c.post.id=post.id');
       },'commentCount')

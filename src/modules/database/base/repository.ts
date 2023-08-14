@@ -25,7 +25,11 @@ export abstract class BaseRepository<E extends ObjectLiteral> extends Repository
    * 构建基础查询器
    */
   buildBaseQB(): SelectQueryBuilder<E> {
-      return this.createQueryBuilder(this.qbName);
+      return this.createQueryBuilder(this.qbName).orderBy(`${this.qbName}.createdAt`, 'DESC');
+  }
+
+  buildSingleQB() {
+    return this.createQueryBuilder(this.qbName).orderBy(`${this.qbName}.createdAt`, 'DESC');
   }
 
   /**

@@ -1,5 +1,5 @@
-import { Controller } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Controller, Get, SerializeOptions } from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { BaseController } from '@/modules/restful/base';
 import { Crud, Depends } from '@/modules/restful/decorators';
@@ -56,5 +56,12 @@ import { CustomerService } from '../services';
 export class CustomerController extends BaseController<CustomerService> {
   constructor(protected service: CustomerService) {
     super(service);
+  }
+
+  @Get('searchList')
+  @ApiOperation({summary:'获取所有评论人名称'})
+  @SerializeOptions({ groups: ['customer-list'] })
+  async searchList() {
+    return this.service.searchList();
   }
 }

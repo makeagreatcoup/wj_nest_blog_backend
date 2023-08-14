@@ -76,12 +76,12 @@ export class AuthService {
         const now = await getTime();
         let user: UserEntity;
         try {
-            user = await this.userService.detail(id);
+            user = await this.userService.findOneById(id);
         } catch (error) {
             throw new ForbiddenException();
         }
         const { accessToken } = await this.tokenService.generateAccessToken(user, now);
-        return accessToken.value;
+        return {token:accessToken.value,user};
     }
 
     /**
@@ -122,7 +122,7 @@ export class AuthService {
     static jwtModuleFactory() {
         return JwtModule.registerAsync({
             useFactory: async () => {
-                const config = await getUserConfig<UserConfig>();
+                const config = getUserConfig<UserConfig>();
                 return {
                     secret: config.jwt.secret,
                     ignoreExpiration: App.configure.getRunEnv() === EnvironmentType.DEVELOPMENT,

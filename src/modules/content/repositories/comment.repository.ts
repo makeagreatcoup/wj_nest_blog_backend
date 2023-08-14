@@ -1,4 +1,3 @@
-import { isNil } from "lodash";
 import { FindTreeOptions, SelectQueryBuilder } from "typeorm";
 
 import { BaseTreeRepository } from "@/modules/database/base/tree.repository";
@@ -22,6 +21,7 @@ export class CommentRepository extends BaseTreeRepository<CommentEntity>{
   buildBaseQB(qb:SelectQueryBuilder<CommentEntity>):SelectQueryBuilder<CommentEntity>{
     return super.buildBaseQB(qb)
     .leftJoinAndSelect(`${this.qbName}.post`,'post')
+    .leftJoinAndSelect(`${this.qbName}.customer`,'customer')
   }
 
   /**
@@ -30,10 +30,11 @@ export class CommentRepository extends BaseTreeRepository<CommentEntity>{
    * @returns 
    */
   async findTrees(options:FindTreeOptions & QueryParams<CommentEntity> & {post?:string}={}){
+    const {addQuery} =options;
     return super.findTrees({
       ...options,
       addQuery:async qb=>{
-        return isNil(options.post)?qb:qb.where('post.id = :id',{id:options.post});
+        return addQuery?addQuery(qb):qb;
       }
     })
   }

@@ -15,6 +15,7 @@ import {
   CreateCommentDto,
   QueryCommentDto,
   QueryCommentTreeDto,
+  QueryCommentTreePaginateDto,
 } from '../dtos/comment.dto';
 import { CommentService } from '../services/comment.service';
 
@@ -57,5 +58,15 @@ export class CommentController extends BaseController<CommentService>{
     query: QueryCommentTreeDto,
   ) {
     return this.service.findTrees(query);
+  }
+
+  @Get('treePaginate')
+  @ApiOperation({summary:'树形结构评论分页查询'})
+  @SerializeOptions({ groups: ['comment-tree'] })
+  async treePaginate(
+    @Query()
+    query: QueryCommentTreePaginateDto,
+  ) {
+    return this.service.treesPaginate(query);
   }
 }
