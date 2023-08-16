@@ -38,6 +38,17 @@ export class QueryPostDto extends ListWithTrashedQueryDto {
   isPublished?: boolean;
 
   @ApiPropertyOptional({
+    description: '文章状态类型: 默认为ON',
+    enum: EffectType,
+    default: 'ON',
+  })
+  @IsEnum(EffectType, {
+      message: `文章状态类型必须是${Object.values(EffectType).join(',')}其中一项`,
+  })
+  @IsOptional()
+  state:EffectType;
+
+  @ApiPropertyOptional({
     description: '排序规则:可指定文章列表的排序规则,默认为综合排序',
     enum: PostOrderType,
   })
@@ -58,6 +69,17 @@ export class QueryPostDto extends ListWithTrashedQueryDto {
   category?:string;
 
   @ApiPropertyOptional({
+    description: '标签ID:包含这些标签id的结果',
+  })
+  @IsUUID(undefined, {
+    each: true,
+    always: true,
+    message: '标签ID格式不正确',
+  })
+  @IsOptional({ always: true })
+  tags?:string[];
+
+  @ApiPropertyOptional({
     description: '搜索关键字:文章全文搜索字符串',
     maxLength: 100,
   })
@@ -67,6 +89,22 @@ export class QueryPostDto extends ListWithTrashedQueryDto {
   })
   @IsOptional({always:true})
   search?:string;
+
+  @ApiPropertyOptional({
+    description: '查询创建时间开始',
+    type: Date,
+  })
+  @IsDateString({ strict: true }, { always: true })
+  @IsOptional({ always: true })
+  startTime?:Date;
+
+  @ApiPropertyOptional({
+    description: '查询创建时间结束',
+    type: Date,
+  })
+  @IsDateString({ strict: true }, { always: true })
+  @IsOptional({ always: true })
+  endTime?:Date;
 }
 
 /**

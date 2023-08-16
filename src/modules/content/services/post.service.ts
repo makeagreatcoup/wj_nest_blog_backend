@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 
 import { PostOrderType, SelectTrashMode } from '@/modules/core/constants';
+import { toBoolean } from '@/modules/core/helpers';
 import { BaseService } from '@/modules/database/base/service';
 import { paginate, treePaginate } from '@/modules/database/helpers';
 import { QueryHook } from '@/modules/database/types';
@@ -16,6 +17,7 @@ import { SearchType } from '@/modules/search/type';
 
 import { CreatePostDto, QueryPostDto, UpdatePostDto } from '../dtos';
 import { PostEntity } from '../entities/post.entity';
+import { parseArrayParam } from '../helpers';
 import { TagRepository,CategoryRepository,PostRepository } from '../repositories';
 
 import { CategoryService } from './category.service';
@@ -77,7 +79,6 @@ export class PostService extends BaseService<PostEntity,PostRepository,FindParam
       options,
       callback,
     );
-    console.log(qb.getSql())
     return paginate(qb, options);
   }
 
@@ -212,21 +213,54 @@ export class PostService extends BaseService<PostEntity,PostRepository,FindParam
       category,
       orderBy,
       isPublished,
+      state,
       search,
+      tags,
+      startTime,
+      endTime,
       trashed = SelectTrashMode.NONE,
     } = options;
     let newQb = qb;
     // 是否查询回收站
+    newQb = newQb.where('1=1')
     if (trashed !== SelectTrashMode.NONE) {
       newQb.withDeleted();
       if (trashed === SelectTrashMode.ONLY) {
-        newQb.where('deleteAt is not null');
+        newQb.andWhere('deleteAt is not null');
       }
     }
-    if (typeof isPublished === 'boolean') {
-      newQb = newQb.where({
-        publishAt: isPublished ? Not(IsNull()) : IsNull(),
+    if (typeof isPublished === 'boolean'||Boolean(isPublished)) {
+      newQb = newQb.andWhere({
+        publishedAt: isPublished&&toBoolean(isPublished) ? Not(IsNull()) : IsNull(),
       });
+    }
+    if (state) {
+      newQb = newQb.andWhere({
+        state
+      });
+    }
+    if(tags&&tags.length>0){
+      const tagsItems=await this.tagRepository.find({
+        where: {
+          id: In(parseArrayParam(tags))
+        },
+        relations: ['posts'],
+        select: ['posts']
+      });
+      const postIds = tagsItems.reduce((acc, tagsItem) => {
+        tagsItem.posts.map(post => {
+          if (!acc.includes(post.id)) {
+            acc.push(post.id); 
+          }
+          return post;
+        });
+        return acc;
+      }, []);
+      if(postIds&&postIds.length>0){
+        newQb = newQb.andWhere('post.id IN (:...postIds)',{postIds})
+      }else{
+        newQb = newQb.andWhere('1=0')
+      }
     }
     // mysql的两种查询
     if (!isNil(search)) {
@@ -250,12 +284,14 @@ export class PostService extends BaseService<PostEntity,PostRepository,FindParam
           // });
       }
     }
-    newQb = this.queryOrderBy(newQb, orderBy);
     if (category) {
-      newQb = await this.queryByCategory(category, newQb);
+      newQb = qb.andWhere('categoryId =:category', { category })
     }
-    newQb =
-      !isNil(callback) && isFunction(callback) ? await callback(newQb) : newQb;
+    if(startTime&&endTime){
+      newQb = qb.andWhere('post.createdAt BETWEEN :startTime AND :endTime',{startTime,endTime})
+    }
+    newQb = this.queryOrderBy(newQb, orderBy);
+    newQb = !isNil(callback) && isFunction(callback) ? await callback(newQb) : newQb;
     return newQb;
   }
 
@@ -282,8 +318,6 @@ export class PostService extends BaseService<PostEntity,PostRepository,FindParam
         return qb.orderBy('customOrder', 'DESC');
       default:
         return qb
-          .addOrderBy('createdAt', 'DESC')
-          .addOrderBy('commentCount', 'DESC');
     }
   }
 
