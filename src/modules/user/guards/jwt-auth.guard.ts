@@ -26,7 +26,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
         const request = this.getRequest(context);
         const response = this.getResponse(context);
 
-        const url = request.url;
+        const {url} = request;
         const crudGuest = Reflect.getMetadata(
             ALLOW_GUEST,
             context.getClass().prototype,

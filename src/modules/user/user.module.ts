@@ -17,7 +17,7 @@ import { UserConfig } from "./types";
 
 
 const jwtModuleRegister = (configure: Configure) => async (): Promise<JwtModuleOptions> => {
-  const config = await configure.get<UserConfig>('user');
+  const config = configure.get<UserConfig>('user');
   const isProd = configure.getRunEnv() === EnvironmentType.PRODUCTION;
   const option: JwtModuleOptions = {
       secret: config.jwt.secret,
