@@ -3,3 +3,4 @@ export *from './category.controller'
 export * from './comment.controller';
 export * from './customer.controller'
 export * from './tag.controller'
+export * from './website.controller'

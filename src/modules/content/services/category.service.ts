@@ -1,7 +1,7 @@
 
 import { Injectable } from '@nestjs/common';
 import { omit } from 'lodash';
-import { EntityNotFoundError } from 'typeorm';
+import { EntityNotFoundError, FindTreeOptions } from 'typeorm';
 
 import { SelectTrashMode } from '@/modules/core/constants';
 import { BaseService } from '@/modules/database/base/service';
@@ -28,7 +28,7 @@ export class CategoryService extends BaseService<CategoryEntity,CategoryReposito
    * 查询分类树
    * @returns
    */
-  async findTrees(options:QueryCategoryTreeDto) {
+  async findTrees(options:QueryCategoryTreeDto&FindTreeOptions) {
     const {trashed=SelectTrashMode.NONE}=options;
     
     return this.repository.findTrees({
@@ -95,5 +95,15 @@ export class CategoryService extends BaseService<CategoryEntity,CategoryReposito
       }
     }
     return parent;
+  }
+
+  protected async getParentsTree(currentId: string) {
+    const current = await this.repository.findOneByOrFail({ id: currentId });
+    if(!current){
+      throw new EntityNotFoundError(
+        CategoryEntity,
+        `分类${currentId}不存在`)
+    }
+    return this.repository.findAncestors(current)
   }
 }

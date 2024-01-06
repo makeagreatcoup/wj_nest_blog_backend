@@ -4,7 +4,6 @@ import {
   DeleteDateColumn,
   Entity,
   Index,
-  JoinColumn,
   JoinTable,
   ManyToMany,
   ManyToOne,
@@ -25,7 +24,7 @@ export class PostEntity extends BaseEntity {
 
   @Expose()
   @Column({ comment: '文章标题'})
-  @Index({fulltext:true,unique: true})
+  @Index({fulltext:true})
   title!: string;
 
   @Expose({ groups: ['post-detail'] })
@@ -78,11 +77,10 @@ export class PostEntity extends BaseEntity {
 
   @ManyToOne(()=>CategoryEntity,(category)=>category.posts,{
     // 新增文章时，如果所属分类不存在则直接创建
-    cascade:true
+    nullable: true,
+    onDelete : 'SET NULL'
   })
-  @JoinColumn()
   @Expose()
-  @Index({fulltext:true})
   category!:CategoryEntity;
 
   @Expose()

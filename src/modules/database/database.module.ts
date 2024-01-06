@@ -24,7 +24,7 @@ import { DbConfig } from './types';
     panic({message:'数据库配置错误'})
     exit(1)
   }
-  const {connections} = await configure.get<DbConfig>('database');
+  const {connections} = configure.get<DbConfig>('database');
   console.log(connections)
   connections.forEach(option=>{
     imports.push(TypeOrmModule.forRoot(option as TypeOrmModuleOptions));

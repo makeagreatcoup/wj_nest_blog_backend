@@ -143,10 +143,16 @@ export class PostService extends BaseService<PostEntity,PostRepository,FindParam
     //     .of(post)
     //     .addAndRemove(data.category, post.category ?? '');
     // }
-    const tags=data.tags&&data.tags.length?await this.tagRepository.findBy({ id: In(data.tags) }):[]
+    let tagsData 
+    if (data.tags) {
+      const tags=data.tags.length?await this.tagRepository.findBy({ id: In(data.tags) }):[]
+      tagsData={tags}
+    }
+    
     const category=await this.categoryRepository.findOneBy({id:data.category})
-    await this.repository.update(data.id, omit({...data,category,tags}, ['id']));
 
+    // await this.repository.update(data.id, omit({...data,category,tags}, ['id']));
+    await this.repository.save({...data,...tagsData,category});
     if (!isNil(this.searchService)) {
       try {
         await this.searchService.update(post);
@@ -270,15 +276,15 @@ export class PostService extends BaseService<PostEntity,PostRepository,FindParam
           .orWhere('summary LIKE :search', { search: `%${search}%` })
           .orWhere('category.name LIKE :search', { search: `%${search}%` });
       } else {
-        qb.andWhere('MATCH(title,body,summary,category.name) AGAINST (:search IN BOOLEAN MODE)', {
+        qb.andWhere('MATCH(post.title) AGAINST (:search IN BOOLEAN MODE)', {
           search: `${search}*`,
         })
-          // .orWhere('MATCH(body) AGAINST (:search IN BOOLEAN MODE)', {
-          //   search: `${search}*`,
-          // })
-          // .orWhere('MATCH(summary) AGAINST (:search IN BOOLEAN MODE)', {
-          //   search: `${search}*`,
-          // })
+          .orWhere('MATCH(body) AGAINST (:search IN BOOLEAN MODE)', {
+            search: `${search}*`,
+          })
+          .orWhere('MATCH(post.summary) AGAINST (:search IN BOOLEAN MODE)', {
+            search: `${search}*`,
+          })
           // .orWhere('MATCH(category.name) AGAINST (:search IN BOOLEAN MODE)', {
           //   search: `${search}*`,
           // });
@@ -309,9 +315,9 @@ export class PostService extends BaseService<PostEntity,PostRepository,FindParam
       case PostOrderType.CREATED:
         return qb.orderBy('createdAt', 'DESC');
       case PostOrderType.UPDATED:
-        return qb.orderBy('updateAt', 'DESC');
+        return qb.orderBy('updatedAt', 'DESC');
       case PostOrderType.PUBLISHED:
-        return qb.orderBy('publishedAt', 'DESC');
+        return qb.orderBy('post.publishedAt', 'DESC');
       case PostOrderType.COMMENTCOUNT:
         return qb.orderBy('commentCount', 'DESC');
       case PostOrderType.CUSTOM:

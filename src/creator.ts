@@ -17,9 +17,9 @@ export const creator = createApp({
     builder: async ({ configure, BootModule }) => {
         return NestFactory.create<NestFastifyApplication>(BootModule, new FastifyAdapter(), {
             cors: {
-                origin: ['http://localhost:3001'],
+                origin: ['http://localhost:3001','http://localhost:5173'],
                 credentials: true  ,
-                //处理cors预检查
+                // 处理cors预检查
                 methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS','PATCH'],
                 allowedHeaders: ['Content-Type', 'Authorization'],
                 maxAge: 3600

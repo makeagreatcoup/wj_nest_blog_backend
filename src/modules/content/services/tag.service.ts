@@ -19,6 +19,7 @@ export class TagService extends BaseService<TagEntity,TagRepository>{
   async searchList(){
     return this.repository.buildSingleQB()
       .select(["id", "title","color"])
+      .where({state:'ON'})
       .getRawMany();
   }
 

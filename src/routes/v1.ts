@@ -13,6 +13,7 @@ export const v1 = async (configure: Configure): Promise<ApiVersionOption> => ({
         title: '应用接口',
         description: 'Blog的应用接口',
         tags: [
+          { name: '网站', description: '网站相关查询' },
           { name: '分类', description: '分类的增删查改操作' },
           { name: '文章', description: '文章的增删查改操作' },
           { name: '评论', description: '评论的增删查操作' },
